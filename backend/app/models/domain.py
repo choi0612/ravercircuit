@@ -10,6 +10,9 @@ class Genre(str, Enum):
     TRANCE = "trance"
     DNB = "dnb"
     HARDSTYLE = "hardstyle"
+    DUBSTEP = "dubstep"
+    MELODIC = "melodic"
+    PROGRESSIVE_HOUSE = "progressive house"
 
 
 class EventKind(str, Enum):
