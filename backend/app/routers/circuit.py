@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
@@ -27,7 +27,8 @@ def get_circuit(svc: EventsService = Depends(get_events_service)):
 def add_leg(body: LegCreate, svc: EventsService = Depends(get_events_service)):
     if svc.get_event(body.event_id) is None:
         raise HTTPException(404, "event not found")
-    leg = CircuitLeg(event_id=body.event_id, status=body.status, added_at=datetime.now())
+    leg = CircuitLeg(event_id=body.event_id, status=body.status,
+                     added_at=datetime.now(timezone.utc))
     if not svc.add_leg(leg):
         raise HTTPException(409, "event already in circuit")
     return leg

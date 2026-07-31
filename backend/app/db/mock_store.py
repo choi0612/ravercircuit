@@ -54,6 +54,9 @@ class MockStore:
              if any(s.artist_id == artist_id for s in e.lineup)],
             key=lambda e: e.start_date)
 
+    def all_events(self) -> list[Event]:
+        return list(self._events.values())
+
     # ---- the updates stream ----
     def get_updates(self, event_id: str, start: datetime | None = None,
                     end: datetime | None = None) -> list[EventUpdate]:

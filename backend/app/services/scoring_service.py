@@ -36,7 +36,7 @@ class ScoringService:
     def recommend_all(self) -> list[Recommendation]:
         """Score every event not already in the circuit; best first."""
         in_circuit = {l.event_id for l in self.store.get_circuit()}
-        recs = [self.score_event(e) for e in self.store._events.values()
+        recs = [self.score_event(e) for e in self.store.all_events()
                 if e.id not in in_circuit]
         return sorted(recs, key=lambda r: r.score, reverse=True)
 
