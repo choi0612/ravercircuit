@@ -29,13 +29,15 @@ class Settings(BaseSettings):
 
     dynamodb_endpoint: str | None = None
 
+    store_backend: str = "mock"   # "mock" | "dynamo" — which store the doorway builds
+
     @model_validator(mode = "after")
     def _weights_sum_to_one(self):
         total = (self.w_lineup_value + self.w_cost_efficiency + self.w_chain_bonus + self.w_crew + self.w_production_fit + self.w_weather_comfort)
         if abs(total - 1.0) > 1e-6:
             raise ValueError(f"scoring weights must sum to 1.0, got {total}")
         return self
-
+        
 @lru_cache
 def get_settings() -> Settings:
     return Settings()

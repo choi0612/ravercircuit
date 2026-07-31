@@ -1,7 +1,6 @@
 """The six-factor brain: how good is this event, for you, right now."""
 import math
 from app.config import Settings
-from app.db.mock_store import MockStore
 from app.models.domain import Event, Recommendation, ScoreFactor
 
 # comfort by month for each metro: 1.0 = perfect season, low = brutal
@@ -29,7 +28,7 @@ def _haversine_km(lat1, lon1, lat2, lon2) -> float:
 
 
 class ScoringService:
-    def __init__(self, store: MockStore, settings: Settings):
+    def __init__(self, store, settings: Settings):
         self.store = store
         self.cfg = settings
 
