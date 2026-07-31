@@ -6,3 +6,4 @@ dist/
 .env
 data/raw/
 data/real_scene.json
+.pytest_cache/
