@@ -56,7 +56,7 @@ popularity = {a.id: rng.choices([1, 2, 3], weights=[15, 35, 50])[0] for a in art
 def pick_lineup(size: int, flavor: str) -> list[LineupSlot]:
     """Choose artists for one event, favoring the event's genre flavor."""
     on_flavor = [a for a in artists if flavor in a.genres]
-    pool = on_flavor + rng.sample(artists, 30)          # mostly on-genre, some wildcards
+    pool = list({a.id: a for a in on_flavor + rng.sample(artists, 30)}.values())
     chosen = rng.sample(pool, min(size, len(pool)))
     slots = []
     for a in chosen:

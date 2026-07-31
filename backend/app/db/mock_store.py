@@ -98,3 +98,10 @@ class MockStore:
         self._rsvps = [r for r in self._rsvps
                        if not (r.friend_id == rsvp.friend_id and r.event_id == rsvp.event_id)]
         self._rsvps.append(rsvp)
+
+    # ---- materialized recommendations ----
+    def write_recommendations(self, recs) -> None:
+        self._recs = list(recs)
+
+    def read_recommendations(self, limit: int = 200):
+        return list(getattr(self, "_recs", []))[:limit]

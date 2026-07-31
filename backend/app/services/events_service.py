@@ -5,12 +5,13 @@ from app.config import get_settings
 from app.db.mock_store import MockStore
 from app.models.domain import CircuitLeg, Friend, FriendRsvp
 from app.services.scoring_service import ScoringService
-
+from app.db.dynamo_store import DynamoStore
 
 class EventsService:
-    def __init__(self, store: MockStore, scorer: ScoringService):
+    def __init__(self, store, scorer: ScoringService):
         self.store = store
         self.scorer = scorer
+        self.recompute()          # a service is born ready: the board exists from breath one
 
     # reads — thin pass-throughs on purpose
     def get_event(self, event_id): return self.store.get_event(event_id)
@@ -35,8 +36,32 @@ class EventsService:
     def add_friend(self, friend: Friend) -> None: self.store.add_friend(friend)
     def add_rsvp(self, rsvp: FriendRsvp) -> None: self.store.add_rsvp(rsvp)
 
+    def recompute(self):
+        self.store.write_recommendations(self.scorer.recommend_all())
+
+    def recommendations(self):
+        return self.store.read_recommendations()
+
+    def add_leg(self, leg):
+        ok = self.store.add_leg(leg)
+        if ok: self.recompute()
+        return ok
+
+    def remove_leg(self, event_id):
+        ok = self.store.remove_leg(event_id)
+        if ok: self.recompute()
+        return ok
+
+    def add_rsvp(self, rsvp):
+        self.store.add_rsvp(rsvp)
+        self.recompute()
+
 
 @lru_cache
 def get_events_service() -> EventsService:
-    store = MockStore()
-    return EventsService(store, ScoringService(store, get_settings()))
+    cfg = get_settings()
+    store = (DynamoStore(cfg.dynamodb_endpoint) if cfg.store_backend == "dynamo"
+             else MockStore())
+    svc = EventsService(store, ScoringService(store, cfg))
+    svc.recompute()
+    return svc
