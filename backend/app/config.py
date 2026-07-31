@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     w_production_fit: float = 0.10
     w_weather_comfort: float = 0.10
 
+    novelty_decay: float = 0.10   # value lost per prior viewing: 0.9^n; 0 = off, 0.5 = strong
+
     dynamodb_endpoint: str | None = None
 
     @model_validator(mode = "after")
